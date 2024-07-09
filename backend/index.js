@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request } from "express";
 import { PORT, mongoDBURL } from "./config.js";
 import mongoose, { MongooseError } from "mongoose";
 import e from "express";
@@ -34,6 +34,36 @@ app.post("/books", async (request, response) => {
 		const book = await Book.create(newBook);
 
 		return response.status(201).send(book);
+	} catch (error) {
+		console.log(error.message);
+		response.status(500).send({ message: error.message });
+	}
+});
+
+app.get("/books", async (request, response) => {
+	try {
+		const books = await Book.find({});
+
+		return response.status(200).json({
+			count: books.lenght,
+			data: books,
+		});
+	} catch (error) {
+		console.log(error.message);
+		response.status(500).send({ message: error.message });
+	}
+});
+
+app.get("/books/:id", async (request, response) => {
+	try {
+		const { id } = request.params;
+
+		const book = await Book.findById(id);
+
+		return response.status(200).json({
+			count: book.lenght,
+			data: book,
+		});
 	} catch (error) {
 		console.log(error.message);
 		response.status(500).send({ message: error.message });
